@@ -51,7 +51,24 @@ def _run_server() -> None:
     # Signal handlers can only be installed on the main thread; disable them so
     # running the server from a worker thread does not raise.
     server.install_signal_handlers = lambda: None  # type: ignore[assignment]
-    server.run()
+    try:
+        server.run()
+    except OSError as exc:
+        # e.g. WinError 10048 / EADDRINUSE — another backend already owns the
+        # port. That is fine: ensure_backend() will detect the existing server
+        # via the health check and reuse it. Log and let this thread exit.
+        logger.warning("Backend thread could not bind %s:%d (%s); "
+                       "assuming an existing backend is running.", _HOST, _PORT, exc)
+
+
+def _is_backend_up(timeout: float = 1.5) -> bool:
+    """Return True if a backend is already serving /health on the target port."""
+    import requests
+
+    try:
+        return requests.get(f"http://{_HOST}:{_PORT}/health", timeout=timeout).ok
+    except requests.exceptions.RequestException:
+        return False
 
 
 def _wait_for_health(timeout: float) -> bool:
@@ -80,6 +97,14 @@ def ensure_backend(timeout: float = 30.0) -> bool:
     global _started
     with _lock:
         if not _started:
+            # If a backend is already listening (e.g. a separately-run uvicorn,
+            # or a leftover process on the port), reuse it instead of trying to
+            # bind again — binding twice raises WinError 10048 / EADDRINUSE.
+            if _is_backend_up():
+                _started = True
+                logger.info("Reusing existing backend on %s:%d", _HOST, _PORT)
+                return True
+
             thread = threading.Thread(
                 target=_run_server, name="fastapi-backend", daemon=True
             )
