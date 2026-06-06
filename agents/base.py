@@ -79,6 +79,10 @@ class GeminiAgent:
     response_schema: dict = {}
     #: Audit action label. Defaults to ``"<NAME>_RUN"`` when not set.
     action: str | None = None
+    #: Per-call request timeout in milliseconds. Document-heavy agents (e.g.
+    #: extraction, which uploads PDF bytes) override this with a larger value;
+    #: the default suits lightweight text-only calls.
+    call_timeout_ms: int = _CALL_TIMEOUT_MS
 
     def __init__(self, client: Any, prompt_path: str) -> None:
         """Store the (injected) genai client and the prompt file path."""
@@ -106,7 +110,7 @@ class GeminiAgent:
             temperature=self.temperature,
             response_mime_type="application/json",
             response_schema=self.response_schema or None,
-            http_options=types.HttpOptions(timeout=_CALL_TIMEOUT_MS),
+            http_options=types.HttpOptions(timeout=self.call_timeout_ms),
         )
 
         last_error: Exception | None = None

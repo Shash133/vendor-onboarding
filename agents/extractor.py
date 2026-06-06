@@ -72,6 +72,10 @@ class DocumentExtractionAgent(GeminiAgent):
     name = "extractor"
     action = "EXTRACT_RUN"
     temperature = 0.0
+    # Extraction uploads full document bytes (PDF/image) to the model, which is
+    # markedly slower than text-only calls — a 15s deadline routinely expires
+    # (504 DEADLINE_EXCEEDED). Give it a longer per-call timeout.
+    call_timeout_ms = 60_000
 
     def __init__(self, client: Any, prompts_dir: str | None = None) -> None:
         # The prompt + schema are selected per-run by doc_type, so the base

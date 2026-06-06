@@ -54,6 +54,9 @@ class DocumentClassificationAgent(GeminiAgent):
     action = "CLASSIFY_RUN"
     temperature = 0.0
     response_schema = CLASSIFY_SCHEMA
+    # Like extraction, classification uploads document bytes to the model, so it
+    # needs more than the default 15s deadline to avoid 504 DEADLINE_EXCEEDED.
+    call_timeout_ms = 60_000
 
     def __init__(self, client: Any, prompt_path: str | None = None) -> None:
         super().__init__(client, prompt_path or _DEFAULT_PROMPT)
