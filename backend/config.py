@@ -23,7 +23,7 @@ load_dotenv(dotenv_path=_ENV_PATH, override=False)
 
 # --- Environment variables (defaults mirror .env.example) ---------------------
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "")
-GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-2.5-flash")
+GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-2.5-flash-lite")
 DB_PATH = os.getenv("DB_PATH", "./database/app.db")
 UPLOAD_DIR = os.getenv("UPLOAD_DIR", "./uploads")
 BACKEND_URL = os.getenv("BACKEND_URL", "http://localhost:8000")

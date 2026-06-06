@@ -22,7 +22,7 @@ services:
       - key: PYTHON_VERSION
         value: "3.11.9"
       - key: GEMINI_MODEL
-        value: gemini-2.5-flash
+        value: gemini-2.5-flash-lite
       # Seed prior vendors (duplicate/fraud demo cases) on a fresh ephemeral DB.
       - key: SEED_ON_STARTUP
         value: "1"
