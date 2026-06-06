@@ -208,9 +208,18 @@ def run_workflow(submission_id: str) -> dict:
     """``POST /workflow/run`` — run the full pipeline synchronously.
 
     Returns ``{submission_id, decision{...}}`` once the pipeline completes.
+
+    Uses a longer timeout than the default: a live run fans out to several
+    Gemini calls (classification + per-document extraction + risk / explanation
+    / communication), which under the free-tier rate limit can take well over a
+    minute. The backend always finishes (agents fall back deterministically on
+    failure), so we wait rather than cut the connection early.
     """
     return _request(
-        "POST", "/workflow/run", json_body={"submission_id": submission_id}
+        "POST",
+        "/workflow/run",
+        json_body={"submission_id": submission_id},
+        timeout=240,
     )
 
 
