@@ -72,12 +72,11 @@ class DocumentExtractionAgent(GeminiAgent):
     name = "extractor"
     action = "EXTRACT_RUN"
     temperature = 0.0
-    # Extraction uploads full document bytes (PDF/image), which is much slower
-    # than text-only calls. Allow a longer single attempt, but do NOT retry: a
-    # retry just doubles the wait on a slow/504 call. If it does not complete,
-    # the deterministic fallback covers it and the run stays time-bounded.
+    # Extraction uploads full document bytes (PDF/image): allow a longer single
+    # attempt. Retry once — transient 503 (model overloaded) / 429 errors return
+    # quickly, so a second attempt is cheap and avoids an unnecessary fallback.
     call_timeout_ms = 30_000
-    call_retries = 0
+    call_retries = 1
 
     def __init__(self, client: Any, prompts_dir: str | None = None) -> None:
         # The prompt + schema are selected per-run by doc_type, so the base

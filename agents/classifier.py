@@ -54,10 +54,11 @@ class DocumentClassificationAgent(GeminiAgent):
     action = "CLASSIFY_RUN"
     temperature = 0.0
     response_schema = CLASSIFY_SCHEMA
-    # Classification uploads document bytes too: longer single attempt, no retry
-    # (keeps total run time bounded; fallback covers an incomplete call).
+    # Classification uploads document bytes too: longer single attempt, and one
+    # retry to ride out transient 503 (high demand) / 429 errors before falling
+    # back (these return quickly, so the retry is cheap).
     call_timeout_ms = 30_000
-    call_retries = 0
+    call_retries = 1
 
     def __init__(self, client: Any, prompt_path: str | None = None) -> None:
         super().__init__(client, prompt_path or _DEFAULT_PROMPT)

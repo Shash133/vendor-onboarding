@@ -24,6 +24,7 @@ from __future__ import annotations
 
 import json
 import logging
+import os
 from typing import Any
 
 from google import genai
@@ -44,6 +45,16 @@ class AgentError(Exception):
     ``run()`` catches this and falls back to a deterministic backup so the
     pipeline is never blocked by an agent failure.
     """
+
+
+def _strict_agents() -> bool:
+    """Return True when STRICT_AGENTS is set truthy.
+
+    In strict mode, ``run()`` re-raises ``AgentError`` instead of returning the
+    deterministic fallback — so the real model error is surfaced (debugging).
+    Read at call time (not import) so it can be toggled without re-importing.
+    """
+    return os.getenv("STRICT_AGENTS", "").strip().lower() in ("1", "true", "yes")
 
 
 def make_client(api_key: str | None = None) -> genai.Client:
@@ -188,6 +199,14 @@ class GeminiAgent:
         try:
             response = self._call(parts)
         except AgentError as exc:
+            # Strict mode (STRICT_AGENTS=1 / true): do NOT fall back — re-raise so
+            # the real model error (429, 504, auth, etc.) surfaces to the caller /
+            # API response instead of being masked by the deterministic backup.
+            # Useful for debugging; leave it OFF in production so an agent failure
+            # never blocks the pipeline.
+            if _strict_agents():
+                logger.error("[%s] strict mode: re-raising AgentError: %s", self.name, exc)
+                raise
             logger.warning("[%s] falling back after AgentError: %s", self.name, exc)
             response = self.fallback(*args, **kwargs)
 
