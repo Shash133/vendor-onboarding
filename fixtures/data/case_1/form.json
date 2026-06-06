@@ -1,0 +1,14 @@
+{
+  "legal_name": "Acme Technologies Private Limited",
+  "pan": "AABCA1001C",
+  "gst": "27AABCA1001C1ZQ",
+  "address": "12 Industrial Area, Bengaluru, Karnataka 560001",
+  "contact_email": "accounts@acme.example",
+  "contact_phone": "+91 9876543210",
+  "vendor_type": "company",
+  "bank": {
+    "account_number": "100000000001",
+    "ifsc": "HDFC0001234",
+    "account_holder": "Acme Technologies Private Limited"
+  }
+}

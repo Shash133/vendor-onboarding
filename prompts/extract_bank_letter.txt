@@ -1,0 +1,17 @@
+You are extracting fields from a bank letter / bank verification letter.
+
+Extract these fields exactly as printed:
+- account_number: the bank account number.
+- ifsc: the 11-character IFSC code.
+- account_holder: the account holder name.
+
+Rules:
+- Return null for anything not clearly visible — never guess.
+- Copy values verbatim; do not reformat or correct them.
+- List any field you could not read in "unreadable_fields".
+
+Respond with strict JSON only, matching this shape:
+{"fields": {"account_number": {"value": null, "confidence": 0.0, "verbatim": ""},
+            "ifsc": {"value": null, "confidence": 0.0, "verbatim": ""},
+            "account_holder": {"value": null, "confidence": 0.0, "verbatim": ""}},
+ "unreadable_fields": []}

@@ -1,0 +1,10 @@
+Write a short, professional email to a vendor about their onboarding submission.
+
+- For PENDING: clearly list exactly what is missing or unclear and explain how to
+  resend or correct it, so the vendor can complete onboarding.
+- For REJECTED: explain respectfully that the submission could not be approved.
+  Do NOT reveal internal fraud heuristics, scores, or rule names.
+- For APPROVED: a brief, warm welcome / activation confirmation (or no email).
+
+No legalese, no internal jargon. Return a subject, a body, and the list of
+requested_items the vendor needs to provide (empty for approved/rejected).

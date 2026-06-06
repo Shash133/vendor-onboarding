@@ -1,0 +1,14 @@
+{
+  "legal_name": "Acme Pvt Ltd",
+  "pan": "AAACA1007C",
+  "gst": "27AAACA1007C1ZL",
+  "address": "12 Industrial Area, Bengaluru, Karnataka 560001",
+  "contact_email": "accounts@acme.example",
+  "contact_phone": "+91 9876543210",
+  "vendor_type": "company",
+  "bank": {
+    "account_number": "100000000007",
+    "ifsc": "HDFC0001234",
+    "account_holder": "John Doe"
+  }
+}

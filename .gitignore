@@ -1,0 +1,14 @@
+# Local uploaded vendor files
+uploads/
+
+# SQLite database
+database/app.db
+
+# Environment
+.env
+.venv/
+
+# Python
+__pycache__/
+*.pyc
+.pytest_cache/

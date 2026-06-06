@@ -1,0 +1,14 @@
+{
+  "legal_name": "Cygnus Systems Private Limited",
+  "pan": "AABCA1003C",
+  "gst": "27AABCA1003C1ZO",
+  "address": "12 Industrial Area, Bengaluru, Karnataka 560001",
+  "contact_email": "accounts@acme.example",
+  "contact_phone": "+91 9876543210",
+  "vendor_type": "company",
+  "bank": {
+    "account_number": "100000000003",
+    "ifsc": "HDFC0001234",
+    "account_holder": "Cygnus Systems Private Limited"
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "legal_name": "Borealis Trading Private Limited",
+  "pan": "AABCA1002C",
+  "gst": "27AABCA1002C1ZP",
+  "address": "12 Industrial Area, Bengaluru, Karnataka 560001",
+  "contact_email": "accounts@acme.example",
+  "contact_phone": "+91 9876543210",
+  "vendor_type": "company",
+  "bank": {
+    "account_number": "100000000002",
+    "ifsc": "HDFC0001234",
+    "account_holder": "Borealis Trading Private Limited"
+  }
+}

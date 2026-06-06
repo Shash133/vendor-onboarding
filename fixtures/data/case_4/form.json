@@ -1,0 +1,14 @@
+{
+  "legal_name": "Delphi Components Private Limited",
+  "pan": "AABCA1004C",
+  "gst": "27AABCA1004C1ZN",
+  "address": "12 Industrial Area, Bengaluru, Karnataka 560001",
+  "contact_email": "accounts@acme.example",
+  "contact_phone": "+91 9876543210",
+  "vendor_type": "company",
+  "bank": {
+    "account_number": "100000000004",
+    "ifsc": "HDFC0001234",
+    "account_holder": "Delphi Components Private Limited"
+  }
+}

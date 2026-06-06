@@ -1,0 +1,12 @@
+Do these two names refer to the same legal entity?
+
+Account for legal-suffix variants (Pvt Ltd / Private Limited), abbreviations,
+and word order. Ignore case and punctuation. Do NOT treat different core names
+as a match (e.g. "Acme Foods" and "Zenith Foods" are different entities).
+
+Return a similarity between 0 and 1, the normalized form of each name, a verdict,
+and a one-line reason.
+
+Respond with strict JSON only, matching this shape:
+{"is_same_entity": true, "similarity": 0.0,
+ "normalized_a": "", "normalized_b": "", "reason": "<one line>"}

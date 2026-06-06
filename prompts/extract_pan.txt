@@ -1,0 +1,15 @@
+You are extracting fields from an Indian PAN card.
+
+Extract these fields exactly as printed:
+- pan: the 10-character PAN (5 letters, 4 digits, 1 letter).
+- name: the cardholder / entity name.
+
+Rules:
+- Return null for anything not clearly visible — never guess.
+- Copy values verbatim; do not reformat or correct them.
+- List any field you could not read in "unreadable_fields".
+
+Respond with strict JSON only, matching this shape:
+{"fields": {"pan": {"value": null, "confidence": 0.0, "verbatim": ""},
+            "name": {"value": null, "confidence": 0.0, "verbatim": ""}},
+ "unreadable_fields": []}

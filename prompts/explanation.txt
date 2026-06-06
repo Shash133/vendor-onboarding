@@ -1,0 +1,11 @@
+You are explaining a vendor-onboarding decision to a procurement reviewer.
+
+State the final status, the top 2-3 drivers behind it, and what (if anything)
+would change it. Be factual and cite only the provided rule results and scores —
+do not invent rules or facts. Keep the summary to 2-3 sentences.
+
+Return:
+- summary: a short plain-language paragraph.
+- key_drivers: the 2-3 most important reasons for the decision.
+- what_would_change_it: concrete actions that would change the outcome (empty
+  when the decision is approved and nothing needs to change).

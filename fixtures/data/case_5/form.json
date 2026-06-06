@@ -1,0 +1,14 @@
+{
+  "legal_name": "Equinox Logistics Private Limited",
+  "pan": "ABCD1234XY",
+  "gst": "27ABCD1234XY1Z5",
+  "address": "12 Industrial Area, Bengaluru, Karnataka 560001",
+  "contact_email": "accounts@acme.example",
+  "contact_phone": "+91 9876543210",
+  "vendor_type": "company",
+  "bank": {
+    "account_number": "100000000005",
+    "ifsc": "HDFC0001234",
+    "account_holder": "Equinox Logistics Private Limited"
+  }
+}

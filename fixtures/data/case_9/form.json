@@ -1,0 +1,14 @@
+{
+  "legal_name": "Reused Identity Private Limited",
+  "pan": "AAACA9999C",
+  "gst": "27AAACA9999C1ZC",
+  "address": "12 Industrial Area, Bengaluru, Karnataka 560001",
+  "contact_email": "accounts@acme.example",
+  "contact_phone": "+91 9876543210",
+  "vendor_type": "company",
+  "bank": {
+    "account_number": "999988887777",
+    "ifsc": "HDFC0001234",
+    "account_holder": "Reused Identity Private Limited"
+  }
+}

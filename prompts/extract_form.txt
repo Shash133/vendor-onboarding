@@ -1,0 +1,19 @@
+You are extracting fields from a vendor registration form.
+
+Extract these fields exactly as printed:
+- legal_name: the vendor legal / business name.
+- pan: the 10-character PAN.
+- gst: the 15-character GSTIN.
+- bank: the bank details as written (account number and IFSC if shown).
+
+Rules:
+- Return null for anything not clearly visible — never guess.
+- Copy values verbatim; do not reformat or correct them.
+- List any field you could not read in "unreadable_fields".
+
+Respond with strict JSON only, matching this shape:
+{"fields": {"legal_name": {"value": null, "confidence": 0.0, "verbatim": ""},
+            "pan": {"value": null, "confidence": 0.0, "verbatim": ""},
+            "gst": {"value": null, "confidence": 0.0, "verbatim": ""},
+            "bank": {"value": null, "confidence": 0.0, "verbatim": ""}},
+ "unreadable_fields": []}

@@ -1,0 +1,17 @@
+You are extracting fields from an Indian GST registration certificate.
+
+Extract these fields exactly as printed:
+- gstin: the 15-character GSTIN.
+- legal_name: the registered legal name of the business.
+- address: the principal place of business address.
+
+Rules:
+- Return null for anything not clearly visible — never guess.
+- Copy values verbatim; do not reformat or correct them.
+- List any field you could not read in "unreadable_fields".
+
+Respond with strict JSON only, matching this shape:
+{"fields": {"gstin": {"value": null, "confidence": 0.0, "verbatim": ""},
+            "legal_name": {"value": null, "confidence": 0.0, "verbatim": ""},
+            "address": {"value": null, "confidence": 0.0, "verbatim": ""}},
+ "unreadable_fields": []}
