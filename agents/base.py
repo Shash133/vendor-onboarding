@@ -83,6 +83,11 @@ class GeminiAgent:
     #: extraction, which uploads PDF bytes) override this with a larger value;
     #: the default suits lightweight text-only calls.
     call_timeout_ms: int = _CALL_TIMEOUT_MS
+    #: Number of retries after the first attempt. Document-heavy agents set this
+    #: to 0: retrying a slow/504 call just doubles the wait without helping, and
+    #: a bounded total run time matters more (the deterministic fallback covers
+    #: any call that does not complete).
+    call_retries: int = 1
 
     def __init__(self, client: Any, prompt_path: str) -> None:
         """Store the (injected) genai client and the prompt file path."""
@@ -99,13 +104,16 @@ class GeminiAgent:
         return self._prompt_cache
 
     # --- Model call -----------------------------------------------------------
-    def _call(self, parts: list, *, retries: int = 1) -> dict:
+    def _call(self, parts: list, *, retries: int | None = None) -> dict:
         """Call Gemini with JSON-schema-constrained output and parse the result.
 
         Uses ``response_mime_type='application/json'`` + ``response_schema`` and
-        a 15s timeout. On any exception or invalid JSON the call is retried
-        ``retries`` more times; if it still fails an ``AgentError`` is raised.
+        the agent's ``call_timeout_ms``. On any exception or invalid JSON the
+        call is retried (``retries`` defaults to the agent's ``call_retries``);
+        if it still fails an ``AgentError`` is raised.
         """
+        if retries is None:
+            retries = self.call_retries
         config = types.GenerateContentConfig(
             temperature=self.temperature,
             response_mime_type="application/json",

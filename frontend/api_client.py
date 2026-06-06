@@ -219,7 +219,7 @@ def run_workflow(submission_id: str) -> dict:
         "POST",
         "/workflow/run",
         json_body={"submission_id": submission_id},
-        timeout=240,
+        timeout=300,
     )
 
 
