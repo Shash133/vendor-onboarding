@@ -1,0 +1,18 @@
+# Railway configuration for the FastAPI backend.
+# Docs: https://docs.railway.com/reference/config-as-code
+#
+# Deploy: push to GitHub, then in Railway: New Project → Deploy from GitHub repo
+# → pick Shash133/vendor-onboarding. Railway auto-detects Python via Nixpacks
+# (requirements.txt) and uses the startCommand below. Set GEMINI_API_KEY in the
+# Railway service "Variables" tab.
+
+[build]
+builder = "nixpacks"
+
+[deploy]
+# Railway injects $PORT; bind 0.0.0.0 so the service is reachable.
+startCommand = "uvicorn backend.main:app --host 0.0.0.0 --port $PORT"
+healthcheckPath = "/health"
+healthcheckTimeout = 100
+restartPolicyType = "on_failure"
+restartPolicyMaxRetries = 3
