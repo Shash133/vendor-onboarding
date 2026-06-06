@@ -59,7 +59,21 @@ from frontend import server as _backend_server  # noqa: E402
 
 @st.cache_resource(show_spinner="Starting backend…")
 def _boot_backend() -> bool:
-    """Start the in-process backend exactly once per Streamlit server process."""
+    """Ensure a backend is available for this Streamlit server process.
+
+    If ``BACKEND_URL`` points to a remote host (e.g. a Render-hosted FastAPI
+    service), we use that and skip launching the in-process backend. Otherwise
+    (local dev / single-host Streamlit Cloud deploy) we start FastAPI in a
+    background thread on loopback.
+    """
+    backend_url = os.getenv("BACKEND_URL", "")
+    is_remote = bool(backend_url) and not (
+        "localhost" in backend_url or "127.0.0.1" in backend_url
+    )
+    if is_remote:
+        # Externally hosted backend — nothing to start here.
+        return True
+
     ok = _backend_server.ensure_backend()
     if ok:
         _backend_server.seed_if_empty()

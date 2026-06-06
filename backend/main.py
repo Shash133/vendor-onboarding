@@ -18,6 +18,7 @@ from __future__ import annotations
 
 import importlib
 import logging
+import os
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
@@ -50,6 +51,19 @@ async def lifespan(app: FastAPI):
     except Exception:  # pragma: no cover - startup failure is logged and re-raised
         logger.exception("Database initialisation failed on startup.")
         raise
+
+    # Opt-in seeding of prior vendors (duplicate/fraud demo cases 9 & 10). Off by
+    # default so tests / local runs start clean; enabled on hosted deploys via
+    # SEED_ON_STARTUP=1 (see render.yaml) so a fresh ephemeral DB has demo data.
+    if os.getenv("SEED_ON_STARTUP", "").strip().lower() in ("1", "true", "yes"):
+        try:
+            from database.seed import seed
+
+            seeded = seed()
+            logger.info("Seeded %d prior vendor(s) on startup.", len(seeded))
+        except Exception:  # noqa: BLE001 - seeding is best-effort, never fatal
+            logger.warning("Startup seeding failed; continuing without seed data.", exc_info=True)
+
     yield
 
 

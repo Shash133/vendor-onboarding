@@ -1,0 +1,31 @@
+# Render Blueprint — FastAPI backend for vendor onboarding.
+# Docs: https://render.com/docs/blueprint-spec
+#
+# Deploy: push this repo to GitHub, then in Render: New → Blueprint → pick this
+# repo. Render reads this file and provisions the web service below. Set the
+# GEMINI_API_KEY value in the Render dashboard (it is marked sync:false so it is
+# never stored in git).
+#
+# The repo root is the vendor_onboarding/ folder, so requirements.txt and the
+# backend package are both at the root — no rootDir needed.
+
+services:
+  - type: web
+    name: vendor-onboarding-backend
+    runtime: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    # Render injects $PORT; bind 0.0.0.0 so the service is reachable.
+    startCommand: uvicorn backend.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /health
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.11.9"
+      - key: GEMINI_MODEL
+        value: gemini-2.5-flash
+      # Seed prior vendors (duplicate/fraud demo cases) on a fresh ephemeral DB.
+      - key: SEED_ON_STARTUP
+        value: "1"
+      # Set this in the Render dashboard (Environment tab). Not stored in git.
+      - key: GEMINI_API_KEY
+        sync: false
