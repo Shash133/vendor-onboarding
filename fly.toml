@@ -1,0 +1,48 @@
+# Fly.io configuration for the FastAPI backend.
+# Docs: https://fly.io/docs/reference/configuration/
+#
+# The app name must be globally unique — change it if "fly launch" reports it is
+# taken. A persistent volume is mounted at /data so the SQLite database and
+# uploaded files survive restarts and redeploys (DB_PATH / UPLOAD_DIR point there).
+
+app = "vendor-onboarding-backend"
+primary_region = "iad"
+
+[build]
+  dockerfile = "Dockerfile"
+
+[env]
+  # Seed prior vendors (duplicate/fraud demo cases) on first boot of a fresh DB.
+  SEED_ON_STARTUP = "1"
+  GEMINI_MODEL = "gemini-2.5-flash"
+  # Persist data on the mounted volume (see [[mounts]] below).
+  DB_PATH = "/data/app.db"
+  UPLOAD_DIR = "/data/uploads"
+
+[http_service]
+  internal_port = 8080
+  force_https = true
+  # Cost-saving: stop the machine when idle, start it on the next request.
+  # Unlike some hosts, Fly holds the incoming request while the machine starts
+  # (a few seconds) instead of returning errors. Set min_machines_running = 1
+  # to keep it always warm (bills continuously).
+  auto_stop_machines = "stop"
+  auto_start_machines = true
+  min_machines_running = 0
+
+  [[http_service.checks]]
+    grace_period = "10s"
+    interval = "30s"
+    method = "GET"
+    timeout = "5s"
+    path = "/health"
+
+# Persistent volume for SQLite + uploads. Create it once with:
+#   fly volumes create vendor_data --region iad --size 1
+[[mounts]]
+  source = "vendor_data"
+  destination = "/data"
+
+[[vm]]
+  size = "shared-cpu-1x"
+  memory = "512mb"

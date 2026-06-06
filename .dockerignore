@@ -1,0 +1,16 @@
+# Keep the image small and the build fast — exclude dev-only / local artifacts.
+.git
+.gitignore
+.venv
+__pycache__
+**/__pycache__
+*.pyc
+.pytest_cache
+tests
+docs
+uploads
+database/app.db
+.env
+.streamlit/secrets.toml
+# Frontend is deployed separately (Streamlit Cloud); not needed in the API image.
+# (Left in the repo, just not shipped in this container.)
