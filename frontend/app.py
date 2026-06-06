@@ -15,6 +15,7 @@ check in the sidebar gives the user a friendly heads-up when it is unavailable.
 
 from __future__ import annotations
 
+import os
 import sys
 from pathlib import Path
 
@@ -26,6 +27,46 @@ if str(_PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(_PROJECT_ROOT))
 
 import streamlit as st  # noqa: E402
+
+
+def _bridge_secrets_to_env() -> None:
+    """Copy Streamlit Cloud secrets into ``os.environ`` before backend imports.
+
+    On Streamlit Community Cloud, configuration is provided via ``st.secrets``
+    (set in the app's dashboard). ``backend.config`` reads plain environment
+    variables, so we mirror a known set of keys into ``os.environ`` here — before
+    anything imports ``backend.config`` — without overriding values already set
+    in the real environment (local dev / .env still win in that case).
+
+    Accessing ``st.secrets`` raises if no secrets are configured (e.g. local
+    runs), so the whole thing is best-effort.
+    """
+    keys = ("GEMINI_API_KEY", "GEMINI_MODEL", "DB_PATH", "UPLOAD_DIR", "BACKEND_URL")
+    try:
+        for key in keys:
+            if key in st.secrets and not os.getenv(key):
+                os.environ[key] = str(st.secrets[key])
+    except Exception:  # noqa: BLE001 - no secrets configured is fine
+        pass
+
+
+_bridge_secrets_to_env()
+
+# Start the in-process FastAPI backend (single-host / Streamlit Cloud deploy).
+# Imported and invoked AFTER secrets are bridged so the backend sees the config.
+from frontend import server as _backend_server  # noqa: E402
+
+
+@st.cache_resource(show_spinner="Starting backend…")
+def _boot_backend() -> bool:
+    """Start the in-process backend exactly once per Streamlit server process."""
+    ok = _backend_server.ensure_backend()
+    if ok:
+        _backend_server.seed_if_empty()
+    return ok
+
+
+_boot_backend()
 
 from frontend import api_client  # noqa: E402
 from frontend.api_client import ApiError  # noqa: E402

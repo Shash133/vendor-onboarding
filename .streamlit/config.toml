@@ -1,0 +1,11 @@
+# Streamlit configuration (used by Streamlit Community Cloud and local runs).
+# Community Cloud serves the app on its own managed port/proxy; these settings
+# keep behaviour predictable and disable the dev auto-reload watcher in prod.
+
+[server]
+headless = true
+# Reduce filesystem watching overhead on the hosted runtime.
+fileWatcherType = "none"
+
+[browser]
+gatherUsageStats = false

@@ -8,6 +8,9 @@ database/app.db
 .env
 .venv/
 
+# Streamlit local secrets (set these in the Streamlit Cloud dashboard instead)
+.streamlit/secrets.toml
+
 # Python
 __pycache__/
 *.pyc

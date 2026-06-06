@@ -131,3 +131,42 @@ end-to-end (expected status, expected failing rule, and communication presence) 
 | 8 | Fuzzy name variant (same legal entity) | approved | — |
 | 9 | Reused PAN with changed bank details | rejected | PAN_REUSE_NEW_BANK |
 | 10 | Bank account shared with another vendor | rejected | DUP_BANK_ACCT |
+
+## Deploy (Streamlit Community Cloud — single app, both tiers)
+
+Streamlit Community Cloud runs a single process and cannot expose a second
+public port for FastAPI. So the Streamlit app **starts the FastAPI backend in a
+background thread** on `127.0.0.1:8000` and talks to it over loopback. One
+GitHub-connected Streamlit deploy therefore runs both tiers — no separate
+backend host required. (`frontend/server.py` + the `_boot_backend()` hook in
+`frontend/app.py` handle this; local `make run-backend`/`run-frontend` is
+unaffected.)
+
+Steps:
+
+1. Push this repo to GitHub (already done if you used `gh repo create`).
+2. Go to <https://share.streamlit.io> and sign in with GitHub.
+3. **Create app** → pick this repo/branch, set **Main file path** to
+   `frontend/app.py`, and (if the repo root is the parent folder) leave the
+   default; dependencies are read from `requirements.txt`.
+4. Under **Advanced settings → Secrets**, paste your config in TOML form
+   (see `.streamlit/secrets.toml.example`):
+
+   ```toml
+   GEMINI_API_KEY = "your-key"
+   GEMINI_MODEL = "gemini-2.5-flash"
+   ```
+
+5. Deploy. On first load the app boots the backend, runs `init_db()`, and seeds
+   the prior vendors for the duplicate/fraud demo cases.
+
+Notes / limitations:
+
+- **SQLite is ephemeral** on the hosted runtime — data resets when the app
+  reboots or redeploys. Fine for a demo; use a managed database (e.g. Postgres)
+  for anything persistent.
+- The app runs **without** a Gemini key (deterministic fallbacks), but the live
+  free tier is rate-limited (~5 requests/min for `gemini-2.5-flash`); agents
+  fall back automatically when the quota is hit.
+- Never commit `.streamlit/secrets.toml` or `.env` — both are gitignored. Set
+  secrets in the Streamlit dashboard instead.
