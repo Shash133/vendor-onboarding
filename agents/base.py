@@ -88,6 +88,12 @@ class GeminiAgent:
     #: a bounded total run time matters more (the deterministic fallback covers
     #: any call that does not complete).
     call_retries: int = 1
+    #: Gemini 2.5 "thinking" budget in tokens. 2.5 Flash enables thinking by
+    #: default, which adds significant latency (and triggers 504s on heavier
+    #: document calls). Our agents emit structured JSON at temperature 0 and do
+    #: not benefit from it, so it is disabled (0) for speed. Set to ``None`` to
+    #: leave the model default in place.
+    thinking_budget: int | None = 0
 
     def __init__(self, client: Any, prompt_path: str) -> None:
         """Store the (injected) genai client and the prompt file path."""
@@ -120,6 +126,15 @@ class GeminiAgent:
             response_schema=self.response_schema or None,
             http_options=types.HttpOptions(timeout=self.call_timeout_ms),
         )
+        # Disable (or bound) Gemini 2.5 "thinking" for lower latency. Guarded so
+        # the code still runs against SDK builds without ThinkingConfig.
+        if self.thinking_budget is not None and hasattr(types, "ThinkingConfig"):
+            try:
+                config.thinking_config = types.ThinkingConfig(
+                    thinking_budget=self.thinking_budget
+                )
+            except Exception:  # noqa: BLE001 - never let config tuning break a call
+                logger.debug("[%s] ThinkingConfig unavailable; using model default", self.name)
 
         last_error: Exception | None = None
         attempts = retries + 1  # initial attempt + ``retries`` retries
