@@ -162,6 +162,10 @@ class GeminiAgent:
                 parsed = json.loads(text)
                 if not isinstance(parsed, dict):
                     raise ValueError("model response was not a JSON object")
+                logger.info(
+                    "[%s] model OK (%s) response: %s",
+                    self.name, GEMINI_MODEL, json.dumps(parsed)[:800],
+                )
                 return parsed
             except Exception as exc:  # noqa: BLE001 - retry on any failure
                 last_error = exc
