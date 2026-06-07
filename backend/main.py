@@ -86,6 +86,46 @@ def health() -> dict:
     return {"status": "ok"}
 
 
+@app.get("/health/llm")
+def health_llm() -> dict:
+    """Live Gemini connectivity check.
+
+    Makes one tiny real call to the configured model and reports whether it
+    succeeded, which model answered, and the round-trip latency. Lets you verify
+    at a glance that the AI path is actually working (vs. falling back) — e.g.
+    open ``/health/llm`` in a browser. Note: this consumes one request from the
+    model's quota each time it is called.
+    """
+    import time
+
+    from agents.base import make_client
+    from backend.config import GEMINI_API_KEY, GEMINI_MODEL
+
+    if not GEMINI_API_KEY:
+        return {"gemini": "no_key", "model": GEMINI_MODEL,
+                "detail": "GEMINI_API_KEY is not set; agents use deterministic fallbacks."}
+
+    t0 = time.monotonic()
+    try:
+        client = make_client()
+        resp = client.models.generate_content(model=GEMINI_MODEL, contents=["ping"])
+        latency_ms = int((time.monotonic() - t0) * 1000)
+        return {
+            "gemini": "ok",
+            "model": GEMINI_MODEL,
+            "latency_ms": latency_ms,
+            "sample": (getattr(resp, "text", "") or "")[:40],
+        }
+    except Exception as exc:  # noqa: BLE001 - report the real error to the caller
+        latency_ms = int((time.monotonic() - t0) * 1000)
+        return {
+            "gemini": "error",
+            "model": GEMINI_MODEL,
+            "latency_ms": latency_ms,
+            "detail": str(exc)[:300],
+        }
+
+
 def _register_routers(application: FastAPI) -> None:
     """Include any route modules that already exist.
 
